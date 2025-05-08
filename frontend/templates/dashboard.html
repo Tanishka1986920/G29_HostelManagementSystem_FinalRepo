@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="page-title">Dashboard</h1>
+
+<div class="row">
+    <!-- Summary Cards -->
+    <div class="col-md-3 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Rooms</h6>
+                        <h2 class="mb-0">{{ total_rooms|default:"0" }}</h2>
+                    </div>
+                    <i class="fas fa-door-open fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Students</h6>
+                        <h2 class="mb-0">{{ total_students|default:"0" }}</h2>
+                    </div>
+                    <i class="fas fa-user-graduate fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Active Bookings</h6>
+                        <h2 class="mb-0">{{ active_bookings|default:"0" }}</h2>
+                    </div>
+                    <i class="fas fa-calendar-check fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Pending Leaves</h6>
+                        <h2 class="mb-0">{{ pending_leaves|default:"0" }}</h2>
+                    </div>
+                    <i class="fas fa-sign-out-alt fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bullhorn me-2"></i> Recent Notices
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for notice in recent_notices|default:'' %}
+                    <li class="list-group-item">
+                        <h6>{{ notice.title }}</h6>
+                        <p class="mb-0 text-muted">{{ notice.created_at }}</p>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">No recent notices</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'notices' %}" class="btn btn-sm btn-primary">View All Notices</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-calendar-check me-2"></i> Recent Bookings
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for booking in recent_bookings|default:'' %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Room {{ booking.room_id }}</span>
+                            <span class="text-muted">{{ booking.booking_date }}</span>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">No recent bookings</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'bookings' %}" class="btn btn-sm btn-primary">View All Bookings</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

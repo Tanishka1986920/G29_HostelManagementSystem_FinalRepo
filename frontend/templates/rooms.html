@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="page-title">Rooms Management</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-plus-circle me-2"></i> Add New Room
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create">
+                    <div class="mb-3">
+                        <label for="number" class="form-label">Room Number</label>
+                        <input type="text" class="form-control" id="number" name="number" placeholder="Enter room number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="type" class="form-label">Room Type</label>
+                        <select class="form-select" id="type" name="type" required>
+                            <option value="" selected disabled>Select room type</option>
+                            <option value="Single">Single</option>
+                            <option value="Double">Double</option>
+                            <option value="Triple">Triple</option>
+                            <option value="Quad">Quad</option>
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-2"></i>Add Room
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-door-open me-2"></i> Room List
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Number</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for room in rooms %}
+                            <tr>
+                                <td>{{ room.id }}</td>
+                                <td>{{ room.number }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ room.type }}</span>
+                                </td>
+                                <td>
+                                    {% if room.status == 'Available' %}
+                                        <span class="badge bg-success">Available</span>
+                                    {% elif room.status == 'Occupied' %}
+                                        <span class="badge bg-danger">Occupied</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ room.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editRoom{{ room.id }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRoom{{ room.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    
+                                    <!-- Edit Modal -->
+                                    <div class="modal fade" id="editRoom{{ room.id }}" tabindex="-1" aria-labelledby="editRoomLabel{{ room.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editRoomLabel{{ room.id }}">Edit Room</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form method="post">
+                                                    <div class="modal-body">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="update">
+                                                        <input type="hidden" name="id" value="{{ room.id }}">
+                                                        <div class="mb-3">
+                                                            <label for="number{{ room.id }}" class="form-label">Room Number</label>
+                                                            <input type="text" class="form-control" id="number{{ room.id }}" name="number" value="{{ room.number }}" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="type{{ room.id }}" class="form-label">Room Type</label>
+                                                            <select class="form-select" id="type{{ room.id }}" name="type" required>
+                                                                <option value="Single" {% if room.type == 'Single' %}selected{% endif %}>Single</option>
+                                                                <option value="Double" {% if room.type == 'Double' %}selected{% endif %}>Double</option>
+                                                                <option value="Triple" {% if room.type == 'Triple' %}selected{% endif %}>Triple</option>
+                                                                <option value="Quad" {% if room.type == 'Quad' %}selected{% endif %}>Quad</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="status{{ room.id }}" class="form-label">Status</label>
+                                                            <select class="form-select" id="status{{ room.id }}" name="status" required>
+                                                                <option value="Available" {% if room.status == 'Available' %}selected{% endif %}>Available</option>
+                                                                <option value="Occupied" {% if room.status == 'Occupied' %}selected{% endif %}>Occupied</option>
+                                                                <option value="Maintenance" {% if room.status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteRoom{{ room.id }}" tabindex="-1" aria-labelledby="deleteRoomLabel{{ room.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteRoomLabel{{ room.id }}">Confirm Delete</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete Room {{ room.number }}?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <form method="post" style="display:inline;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="delete">
+                                                        <input type="hidden" name="id" value="{{ room.id }}">
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No rooms available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
